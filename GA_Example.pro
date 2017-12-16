@@ -22,13 +22,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+CONFIG += c++14
+
+INCLUDEPATH += GA
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    GA/ga.cpp \
+    GA/particle.cpp \
+    GA/fitness.cpp \
+    randomnumber.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    GA/ga.h \
+    GA/particle.h \
+    GA/fitness.h \
+    randomnumber.h
 
 FORMS += \
         mainwindow.ui
