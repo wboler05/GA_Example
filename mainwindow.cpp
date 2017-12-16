@@ -26,6 +26,7 @@ void MainWindow::updateGui() {
         if (m_ga->running()) {
             ui->mse_lbl->setText(QString::number(m_ga->best().cost()));
             ui->epochs_lbl->setText(QString::number(m_ga->epochs()));
+            ui->coeffs_lbl->setText(m_ga->best().stateToString().c_str());
         }
     }
 }

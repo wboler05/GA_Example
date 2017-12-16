@@ -34,3 +34,18 @@ Particle & Particle::operator= (Particle && r) {
     m_cost = std::move(r.m_cost);
     return *this;
 }
+
+std::string Particle::stateToString() const {
+    std::string s;
+    for (size_t i = 0; i < m_state.size(); i++) {
+        std::stringstream ss;
+        std::string newS;
+        ss << m_state[i];
+        ss >> newS;
+        s.append(newS);
+        if (i != m_state.size() -1) {
+            s.append(", ");
+        }
+    }
+    return s;
+}

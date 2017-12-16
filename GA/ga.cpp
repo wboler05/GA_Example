@@ -1,4 +1,5 @@
 #include "ga.h"
+#include <QApplication>
 
 GA::GA(const GA_Params & p) :
     m_params(p)
@@ -28,6 +29,8 @@ void GA::process() {
     initialize();
 
     do {
+        qApp->processEvents();
+
         evaluation();
         selection();
         crossover();
@@ -93,10 +96,12 @@ void GA::selection() {
         double randVal = uniformRandNormalized();
         size_t sel = 0;
         for (;sel < m_population.size(); sel++) {
-            if (cdf[sel] < randVal) {
+            if (cdf[sel] > randVal) {
+                sel++;
                 break;
             }
         }
+        sel--;
         candidates[i] = m_population[sel];
     }
 
@@ -104,21 +109,55 @@ void GA::selection() {
 }
 
 void GA::crossover() {
+    int totalBits = 0;
+    if (m_population.size() > 0) {
+        totalBits = sizeof(m_population[0].state()[0]) * 8;
+    } else {
+        return;
+    }
 
+    for (size_t i = 0; i < m_population.size(); i++) {
+        for (size_t j = i+1; j < m_population.size(); j++) {
+            double randVal = uniformRandNormalized();
+            if (uniformRandNormalized() > m_params.crossoverRate) {
+                int startBit = RandomNumber::uniformInt(0, totalBits);
+                crossPair(i, j, startBit, totalBits);
+
+            }
+        }
+    }
+}
+
+void GA::crossPair(const size_t & i, const size_t & j, const size_t & startBit, const size_t & totalBits) {
+    for (size_t k = 0; k < m_population[i].state().size(); k++) {
+        for (size_t t = startBit; t < totalBits; t++) {
+            uint64_t  mask = 1;
+            for (size_t g = 0; g < t; g++ ) {
+                mask = mask << 1 | 1;
+            }
+            uint64_t swapBit1 = (*(uint64_t * )(&m_population[i].state()[k])) & mask;
+            uint64_t swapBit2 = (*(uint64_t * )(&m_population[j].state()[k])) & mask;
+            uint64_t newVal1 = (*(uint64_t * )(&m_population[i].state()[k])) & ~mask;
+            uint64_t newVal2 = (*(uint64_t * )(&m_population[j].state()[k])) & ~mask;
+            newVal1 += swapBit1;
+            newVal2 += swapBit2;
+            m_population[i].state()[k] = *(double *)(&newVal1);
+            m_population[j].state()[k] = *(double *)(&newVal2);
+
+        }
+    }
 }
 
 void GA::mutation() {
 
     for (size_t i = 0; i < m_population.size(); i++) {
         for (size_t j = 0; j < m_population[i].state().size(); j++) {
-            int bits = sizeof(m_population[i].state()[j]) * 4;
+            int bits = sizeof(m_population[i].state()[j]) * 8;
             for (int k = 0; k < bits; k++) {
                 double randVal = uniformRandNormalized();
                 if (randVal < m_params.mutationRate) {
-                    double newVal = static_cast<double>(
-                        (1 << k) ^ static_cast<unsigned>(m_population[i].state()[j])
-                    );
-                    m_population[i].state()[j] = newVal;
+                    uint64_t newVal = (1 << k) ^ (*(uint64_t * )(&m_population[i].state()[j]));
+                    m_population[i].state()[j] = *(double*)(&newVal);
                 }
             }
         }

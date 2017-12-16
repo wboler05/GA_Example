@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <limits>
+#include <sstream>
 
 class Particle
 {
@@ -19,6 +20,8 @@ public:
 
     const double & cost() const { return m_cost; }
     void setCost(const double & c) { m_cost = c; }
+
+    std::string stateToString() const;
 
 private:
     std::vector<double> m_state;

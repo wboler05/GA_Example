@@ -6,6 +6,7 @@
 #include <vector>
 #include <cstddef>
 #include <cstdlib>
+#include <cinttypes>
 
 #include "particle.h"
 #include "fitness.h"
@@ -17,10 +18,10 @@ public:
 
     struct GA_Params {
         int populationSize = 50;
-        double mutationRate = 0.0001;
+        double mutationRate = 0.1;
         double crossoverRate = 0.5;
         double terminationCost = 0.0005;
-        int maxEpochs = 10000;
+        int maxEpochs = 100000;
         size_t total_samples = 10;
 
         int max_val =  10000;
@@ -36,6 +37,7 @@ public:
     void evaluation();
     void selection();
     void crossover();
+    void crossPair(const size_t & i, const size_t & j, const size_t & startBit, const size_t & totalBits);
     void mutation();
 
     bool termination_condition(const int & epochs);
