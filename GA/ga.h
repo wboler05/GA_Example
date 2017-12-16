@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <cinttypes>
+#include <iostream>
 
 #include "particle.h"
 #include "fitness.h"
@@ -18,14 +19,14 @@ public:
 
     struct GA_Params {
         int populationSize = 50;
-        double mutationRate = 0.1;
-        double crossoverRate = 0.5;
+        double mutationRate = 0.033;
+        double crossoverRate = 0.65;
         double terminationCost = 0.0005;
         int maxEpochs = 100000;
         size_t total_samples = 10;
 
-        int max_val =  10000;
-        int min_val = -10000;
+        int max_val =  50;
+        int min_val = -50;
     };
 
     GA(const GA_Params & p);

@@ -135,14 +135,23 @@ void GA::crossPair(const size_t & i, const size_t & j, const size_t & startBit, 
             for (size_t g = 0; g < t; g++ ) {
                 mask = mask << 1 | 1;
             }
+            double before1 = m_population[i].state()[k];
+            double before2 = m_population[j].state()[k];
+
             uint64_t swapBit1 = (*(uint64_t * )(&m_population[i].state()[k])) & mask;
             uint64_t swapBit2 = (*(uint64_t * )(&m_population[j].state()[k])) & mask;
             uint64_t newVal1 = (*(uint64_t * )(&m_population[i].state()[k])) & ~mask;
             uint64_t newVal2 = (*(uint64_t * )(&m_population[j].state()[k])) & ~mask;
-            newVal1 += swapBit1;
-            newVal2 += swapBit2;
+            newVal1 += swapBit2;
+            newVal2 += swapBit1;
             m_population[i].state()[k] = *(double *)(&newVal1);
             m_population[j].state()[k] = *(double *)(&newVal2);
+
+            double after1 = m_population[i].state()[k];
+            double after2 = m_population[j].state()[k];
+
+            //std::cout << "Before1: " << before1 << "\tAfter1: " << after1 << std::endl;
+            //std::cout << "Before2: " << before2 << "\tAfter2: " << after2 << std::endl;
 
         }
     }
@@ -156,8 +165,12 @@ void GA::mutation() {
             for (int k = 0; k < bits; k++) {
                 double randVal = uniformRandNormalized();
                 if (randVal < m_params.mutationRate) {
-                    uint64_t newVal = (1 << k) ^ (*(uint64_t * )(&m_population[i].state()[j]));
+                    double before = m_population[i].state()[j];
+                    uint64_t mask = (1 << k);
+                    uint64_t newVal = mask ^ (*(uint64_t * )(&m_population[i].state()[j]));
                     m_population[i].state()[j] = *(double*)(&newVal);
+                    double after = m_population[i].state()[j];
+                    //std::cout << "Before: " << before << "\tAfter: " << after << std::endl;
                 }
             }
         }
